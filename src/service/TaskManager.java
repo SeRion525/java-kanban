@@ -72,8 +72,13 @@ public class TaskManager {
     }
 
     public Task getTask(int id) {
-        Task task = tasksById.get(id);
-        return task;
+        return tasksById.get(id);
+    }
+    public EpicTask getEpicTask(int id) {
+        return (EpicTask) tasksById.get(id);
+    }
+    public SubTask getSubTask(int id) {
+        return (SubTask) tasksById.get(id);
     }
 
     public void createTask(Task task) {
