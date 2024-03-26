@@ -51,11 +51,21 @@ public class TaskManager {
         return subTasks;
     }
 
-    public List<SubTask> getSubTasksFromEpicTask(EpicTask inputEpicTask) {
-        EpicTask epicTask = (EpicTask) tasksById.get(inputEpicTask.getId());
+    public List<SubTask> getSubTasksFromEpicTaskId(int epicTaskId) {
+        EpicTask epicTask = (EpicTask) tasksById.get(epicTaskId);
 
         if (epicTask != null) {
-            return epicTask.getSubTasks();
+            List<Integer> subTasksId = epicTask.getSubTasksId();
+            List<SubTask> subTasks = new ArrayList<>();
+
+            for (int subTaskId : subTasksId) {
+                SubTask subTask = (SubTask) tasksById.get(subTaskId);
+                if (subTask != null) {
+                    subTasks.add(subTask);
+                }
+            }
+
+            return subTasks;
         }
 
         return null;
