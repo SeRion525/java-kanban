@@ -102,14 +102,12 @@ public class TaskManager {
     public void updateTask(Task task) {
         tasksById.put(task.getId(), task);
 
-        if (task instanceof SubTask) {
+        if (TaskType.SUB_TASK.equals(task.getType())) {
             SubTask subTask = (SubTask) task;
-            EpicTask epicTask = (EpicTask) tasksById.get(subTask.getEpic().getId());
+            EpicTask epicTask = (EpicTask) tasksById.get(subTask.getEpicTaskId());
 
             if (epicTask != null) {
-                epicTask.addSubTask(subTask);
-                subTask.setEpicTask(epicTask);
-                epicTask.updateStatus();
+                updateEpicTaskStatus(epicTask.getId());
             }
         } else if (task instanceof EpicTask) {
             EpicTask epicTask = (EpicTask) task;
