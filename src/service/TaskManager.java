@@ -158,19 +158,21 @@ public class TaskManager {
     public void removeTask(int id) {
         Task task = tasksById.remove(id);
 
-        if (task instanceof SubTask) {
-            SubTask subTask = ((SubTask) task);
-            EpicTask epicTask = subTask.getEpic();
-            epicTask.removeSubTask(subTask);
-            epicTask.updateStatus();
-        } else if (task instanceof EpicTask) {
-            EpicTask epicTask = (EpicTask) task;
+        if (task == null) {
+            return;
+        }
 
+        if (TaskType.SUB_TASK.equals(task.getType())) {
+            SubTask subTask = (SubTask) task;
+            EpicTask epicTask = (EpicTask) tasksById.get(subTask.getEpicTaskId());
+
+            epicTask.removeSubTask(subTask.getId());
+
+        } else if (TaskType.EPIC_TASK.equals(task.getType())) {
+            EpicTask epicTask = (EpicTask) task;
             for (int subTaskId : epicTask.getSubTasksId()) {
                 tasksById.remove(subTaskId);
             }
-
-            epicTask.removeAllSubTasks();
         }
     }
 
