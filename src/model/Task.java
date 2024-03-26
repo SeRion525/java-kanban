@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Task {
     protected String title;
     protected String description;
-    protected final int id;
+    protected int id;
     protected Status status;
 
     public Task(String title, String description, int id, Status status) {
@@ -13,6 +13,10 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
     }
 
     public String getTitle() {
@@ -35,6 +39,10 @@ public class Task {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Status getStatus() {
         return status;
     }
@@ -53,7 +61,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description, id, status);
+        return Objects.hash(id);
     }
 
     @Override
