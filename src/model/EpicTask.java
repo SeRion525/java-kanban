@@ -3,65 +3,36 @@ package model;
 import java.util.*;
 
 public class EpicTask extends Task {
-    private final Map<Integer, SubTask> subTasksById;
+    private final List<Integer> subTasksId;
 
-    public EpicTask(String title, String description, int id, Status status) {
-        super(title, description, id, status);
-        this.subTasksById = new HashMap<>();
+    public EpicTask(String title, String description, int id) {
+        super(title, description, id, Status.NEW);
+        this.subTasksId = new ArrayList<>();
     }
 
-    public List<SubTask> getSubTasks() {
-        List<SubTask> subTasks = new ArrayList<>(subTasksById.values());
-        return subTasks;
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC_TASK;
     }
 
-    public Set<Integer> getSubTasksId() {
-        return subTasksById.keySet();
+    public List<Integer> getSubTasksId() {
+        return subTasksId;
     }
 
-    public SubTask getSubTask(int id) {
-        return subTasksById.get(id);
+    public Integer getSubTask(int id) {
+        return subTasksId.get(id);
     }
 
-    public void addSubTask(SubTask subTask) {
-        subTasksById.put(subTask.getId(), subTask);
+    public void addSubTaskId(int id) {
+        subTasksId.add(id);
     }
 
-    public void removeSubTask(SubTask subTask) {
-        subTasksById.remove(subTask.getId());
+    public void removeSubTask(int id) {
+        subTasksId.remove(id);
     }
 
     public void removeAllSubTasks() {
-        subTasksById.clear();
-    }
-
-    public void updateStatus() {
-        if (subTasksById.isEmpty()) {
-            status = Status.NEW;
-            return;
-        }
-
-        boolean allSubTaskIsNew = true;
-        boolean allSubTaskIsDone = true;
-        for (SubTask subTask : subTasksById.values()) {
-            if (Status.NEW.equals(subTask.getStatus()) && allSubTaskIsNew) {
-                allSubTaskIsDone = false;
-            } else if (Status.DONE.equals(subTask.getStatus()) && allSubTaskIsDone){
-                allSubTaskIsNew = false;
-            } else {
-                allSubTaskIsNew = false;
-                allSubTaskIsDone = false;
-                break;
-            }
-        }
-
-        if (allSubTaskIsNew) {
-            this.status = Status.NEW;
-        } else if (allSubTaskIsDone) {
-            this.status = Status.DONE;
-        } else {
-            this.status = Status.IN_PROGRESS;
-        }
+        subTasksId.clear();
     }
 
     @Override
@@ -71,7 +42,7 @@ public class EpicTask extends Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
-                ", subTasksById=" + subTasksById +
+                ", subTasksId=" + subTasksId +
                 '}';
     }
 }
