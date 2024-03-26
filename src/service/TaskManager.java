@@ -1,8 +1,6 @@
 package service;
 
-import model.EpicTask;
-import model.SubTask;
-import model.Task;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TaskManager {
-    private static int allTaskCount = 0;
+    private int allTaskCount = 0;
     private final Map<Integer, Task> tasksById;
 
     public TaskManager() {
@@ -81,14 +79,21 @@ public class TaskManager {
 
     public void createTask(Task task) {
         tasksById.put(task.getId(), task);
+        int taskId = giveId();
+        task.setId(taskId);
 
-        if (task instanceof SubTask) {
+        if (TaskType.SUB_TASK.equals(task.getType())) {
             SubTask subTask = (SubTask) task;
-            EpicTask epicTask = (EpicTask) tasksById.get(subTask.getEpic().getId());
+            EpicTask epicTask = (EpicTask) tasksById.get(subTask.getEpicTaskId());
 
             if (epicTask != null) {
                 epicTask.addSubTask(subTask);
+                epicTask.addSubTaskId(subTask.getId());
+                tasksById.put(taskId, task);
             }
+
+        } else {
+            tasksById.put(taskId, task);
         }
     }
 
@@ -136,5 +141,10 @@ public class TaskManager {
 
             epicTask.removeAllSubTasks();
         }
+    }
+    private int giveId() {
+        int id = allTaskCount;
+        allTaskCount++;
+        return id;
     }
 }
