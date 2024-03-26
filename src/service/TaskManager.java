@@ -109,14 +109,6 @@ public class TaskManager {
             if (epicTask != null) {
                 updateEpicTaskStatus(epicTask.getId());
             }
-        } else if (task instanceof EpicTask) {
-            EpicTask epicTask = (EpicTask) task;
-
-            for (SubTask subTask : epicTask.getSubTasks()) {
-                tasksById.put(subTask.getId(), subTask);
-            }
-
-            epicTask.updateStatus();
         }
     }
 
