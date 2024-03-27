@@ -92,6 +92,7 @@ public class TaskManager {
             if (epicTask != null) {
                 epicTask.addSubTaskId(subTask.getId());
                 tasksById.put(taskId, task);
+                updateEpicTaskStatus(epicTask.getId());
             }
 
         } else {
@@ -159,6 +160,7 @@ public class TaskManager {
             EpicTask epicTask = (EpicTask) tasksById.get(subTask.getEpicTaskId());
 
             epicTask.removeSubTask(subTask.getId());
+            updateEpicTaskStatus(epicTask.getId());
 
         } else if (TaskType.EPIC_TASK.equals(task.getType())) {
             EpicTask epicTask = (EpicTask) task;
