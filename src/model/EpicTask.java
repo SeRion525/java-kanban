@@ -19,18 +19,12 @@ public class EpicTask extends Task {
         return subTasksId;
     }
 
-    public Integer getSubTask(int id) {
-        int index = subTasksId.indexOf(id);
-        return subTasksId.get(index);
-    }
-
     public void addSubTaskId(int id) {
         subTasksId.add(id);
     }
 
     public void removeSubTask(int id) {
-        int index = subTasksId.indexOf(id);
-        subTasksId.remove(index);
+        subTasksId.remove(Integer.valueOf(id));
     }
 
     public void removeAllSubTasks() {
