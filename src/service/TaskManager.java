@@ -21,6 +21,8 @@ public interface TaskManager {
 
     SubTask getSubTask(int id);
 
+    List<Task> getHistory();
+
     void createTask(Task task);
 
     void updateTask(Task task);

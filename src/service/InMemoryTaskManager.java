@@ -10,9 +10,11 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
     private int allTaskCount = 0;
     private final Map<Integer, Task> tasksById;
+    private final List<Task> history;
 
     public InMemoryTaskManager() {
         this.tasksById = new HashMap<>();
+        this.history = new ArrayList<>();
     }
 
     @Override
@@ -77,15 +79,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        return tasksById.get(id);
+        Task task = tasksById.get(id);
+        history.add(task);
+        return task;
     }
+
     @Override
     public EpicTask getEpicTask(int id) {
-        return (EpicTask) tasksById.get(id);
+        Task task = tasksById.get(id);
+        history.add(task);
+        return (EpicTask) task;
     }
+
     @Override
     public SubTask getSubTask(int id) {
-        return (SubTask) tasksById.get(id);
+        Task task = tasksById.get(id);
+        history.add(task);
+        return (SubTask) task;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return history;
     }
 
     @Override
