@@ -4,11 +4,12 @@ import model.SubTask;
 import model.Task;
 import service.InMemoryTaskManager;
 import service.TaskManager;
+import util.Managers;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
 ///////////////////////////////////////////////// СОЗДАНИЕ ЗАДАЧ ///////////////////////////////////////////////////////
         System.out.println("Создание задач");

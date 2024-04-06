@@ -1,6 +1,7 @@
 package service;
 
 import model.*;
+import util.Managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,11 +11,11 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
     private int allTaskCount = 0;
     private final Map<Integer, Task> tasksById;
-    private final List<Task> history;
+    private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         this.tasksById = new HashMap<>();
-        this.history = new ArrayList<>(10);
+        this.historyManager = Managers.getDefaultHistory();
     }
 
     @Override
@@ -80,27 +81,27 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasksById.get(id);
-        history.add(task);
+        historyManager.addTask(task);
         return task;
     }
 
     @Override
     public EpicTask getEpicTask(int id) {
         Task task = tasksById.get(id);
-        history.add(task);
+        historyManager.addTask(task);
         return (EpicTask) task;
     }
 
     @Override
     public SubTask getSubTask(int id) {
         Task task = tasksById.get(id);
-        history.add(task);
+        historyManager.addTask(task);
         return (SubTask) task;
     }
 
     @Override
     public List<Task> getHistory() {
-        return history;
+        return historyManager.getHistory();
     }
 
     @Override
