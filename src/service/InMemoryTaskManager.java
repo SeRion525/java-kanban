@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public InMemoryTaskManager() {
         this.tasksById = new HashMap<>();
-        this.history = new ArrayList<>();
+        this.history = new ArrayList<>(10);
     }
 
     @Override
