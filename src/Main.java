@@ -2,12 +2,13 @@ import model.EpicTask;
 import model.Status;
 import model.SubTask;
 import model.Task;
+import service.InMemoryTaskManager;
 import service.TaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = new InMemoryTaskManager();
 
 ///////////////////////////////////////////////// СОЗДАНИЕ ЗАДАЧ ///////////////////////////////////////////////////////
         System.out.println("Создание задач");
