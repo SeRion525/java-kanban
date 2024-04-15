@@ -3,10 +3,7 @@ package service;
 import model.*;
 import util.Managers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int allTaskCount = 0;
@@ -148,16 +145,24 @@ public class InMemoryTaskManager implements TaskManager {
     }
     @Override
     public void removeAllEpicTasks() {
+        List<Integer> epicTasksIds = new ArrayList<>();
+        List<Integer> subTasksIds = new ArrayList<>();
+
         for (Task task : tasksById.values()) {
             if (TaskType.EPIC_TASK.equals(task.getType())) {
                 EpicTask epicTask = (EpicTask) task;
 
-                for (int subTaskId : epicTask.getSubTasksId()) {
-                    tasksById.remove(subTaskId);
-                }
-
-                tasksById.remove(epicTask.getId());
+                epicTasksIds.add(epicTask.getId());
+                subTasksIds.addAll(epicTask.getSubTasksId());
             }
+        }
+
+        for (Integer epicTaskId : epicTasksIds) {
+            tasksById.remove(epicTaskId);
+        }
+
+        for (Integer subTaskId : subTasksIds) {
+            tasksById.remove(subTaskId);
         }
     }
 
