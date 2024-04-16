@@ -86,7 +86,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void addNewTaskWhenHistoryIsFull() {
-        List<Task> previousHistory = new ArrayList<>(taskManager.getHistory());
+        List<Task> previousHistory = taskManager.getHistory();
 
         Task gottenTask = taskManager.getTask(0);
         List<Task> updatedHistory = taskManager.getHistory();
