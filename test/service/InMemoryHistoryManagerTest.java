@@ -119,7 +119,6 @@ class InMemoryHistoryManagerTest {
     }
 
 
-
     @Test
     void shouldWasPreviousVersionOfTaskInHistory() {
         Task newTask1 = new Task("task10", "task10 desc", Status.IN_PROGRESS);
