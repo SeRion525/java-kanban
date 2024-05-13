@@ -99,17 +99,6 @@ class InMemoryHistoryManagerTest {
         assertEquals(1, currTaskCount, "Задача в истории повторяется");
     }
 
-//    @Test
-//    void addNewTaskWhenHistoryIsFull() {
-//        List<Task> previousHistory = taskManager.getHistory();
-//
-//        Task gottenTask = taskManager.getTask(0);
-//        List<Task> updatedHistory = taskManager.getHistory();
-//
-//        assertNotEquals(previousHistory, updatedHistory, "История не обновилась.");
-//        assertEquals(gottenTask, updatedHistory.get(9), "Новая задача не добавилась в конец списка.");
-//    }
-
     @Test
     void shouldRemoveTaskFromHistory() {
         taskManager.removeTask(0);
