@@ -144,6 +144,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
     }
+
     @Override
     public void removeAllEpicTasks() {
         List<Integer> epicTasksIds = new ArrayList<>();
@@ -234,7 +235,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             if (Status.NEW.equals(subTaskStatus) && allSubTasksIsNew) {
                 allSubTasksIsDone = false;
-            } else if (Status.DONE.equals(subTaskStatus) && allSubTasksIsDone){
+            } else if (Status.DONE.equals(subTaskStatus) && allSubTasksIsDone) {
                 allSubTasksIsNew = false;
             } else {
                 allSubTasksIsNew = false;
