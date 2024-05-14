@@ -12,19 +12,20 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node first;
     private Node last;
 
-    public InMemoryHistoryManager() {
-
-    }
-
     @Override
     public void add(Task task) {
-        Node node = history.get(task.getId());
+        if (task == null) {
+            return;
+        }
+
+        Node node = history.remove(task.getId());
 
         if (node != null) {
-            node.item = task;
-        } else {
-            history.put(task.getId(), linkLast(task));
+            removeNode(node);
         }
+
+        history.put(task.getId(), linkLast(task));
+
     }
 
     @Override
@@ -42,13 +43,13 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private Node linkLast(Task task) {
-        Node last = this.last;
-        Node newNode = new Node(task, null, last);
-        this.last = newNode;
-        if (last == null) {
+        Node lastOld = last;
+        Node newNode = new Node(task, null, lastOld);
+        last = newNode;
+        if (lastOld == null) {
             this.first = newNode;
         } else {
-            last.next = newNode;
+            lastOld.next = newNode;
         }
 
         return newNode;
@@ -58,7 +59,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         List<Task> tasks = new ArrayList<>();
 
         for (Node curr = first; curr != null; curr = curr.next) {
-           tasks.add(curr.item);
+            tasks.add(curr.item);
         }
 
         return tasks;
@@ -69,14 +70,14 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node nextNode = node.next;
 
         if (prevNode == null && nextNode == null) {
-            this.first = null;
-            this.last = null;
+            first = null;
+            last = null;
         } else if (prevNode == null) {
             nextNode.prev = null;
-            this.first = nextNode;
+            first = nextNode;
         } else if (nextNode == null) {
             prevNode.next = null;
-            this.last = prevNode;
+            last = prevNode;
         } else {
             prevNode.next = nextNode;
             nextNode.prev = prevNode;

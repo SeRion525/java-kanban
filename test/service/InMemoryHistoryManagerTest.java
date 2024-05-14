@@ -149,7 +149,7 @@ class InMemoryHistoryManagerTest {
         taskManager.getTask(0);
 
         List<Task> history = taskManager.getHistory();
-        Task task1FromHistory = history.get(0);
+        Task task1FromHistory = history.get(history.size() - 1);
 
         assertEquals(newTask1.getId(), task1FromHistory.getId(),
                 "У задач разный ID");
