@@ -2,7 +2,6 @@ import model.EpicTask;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import service.InMemoryTaskManager;
 import service.TaskManager;
 import util.Managers;
 
@@ -16,7 +15,7 @@ public class Main {
         System.out.println();
 
         int task1Id = 0;
-        Task task1 = new Task("Задача 1" , "Описание задачи", Status.NEW);
+        Task task1 = new Task("Задача 1", "Описание задачи", Status.NEW);
         taskManager.createTask(task1);
 
         int task2Id = 1;
@@ -61,13 +60,13 @@ public class Main {
         System.out.println("Изменение задач");
         System.out.println();
 
-        task1 = new Task("Задача 1" , "Описание задачи", Status.IN_PROGRESS);
+        task1 = new Task("Задача 1", "Описание задачи", Status.IN_PROGRESS);
         task1.setId(task1Id);
         taskManager.updateTask(task1);
         System.out.println(taskManager.getTask(task1Id));
         System.out.println();
 
-        task2 = new Task("Задача 2" , "Описание задачи", Status.DONE);
+        task2 = new Task("Задача 2", "Описание задачи", Status.DONE);
         task2.setId(task2Id);
         taskManager.updateTask(task2);
         System.out.println(taskManager.getTask(task2Id));

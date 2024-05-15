@@ -85,15 +85,39 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addNewTaskWhenHistoryIsFull() {
-        List<Task> previousHistory = taskManager.getHistory();
+    void shouldNotSameTasksInHistory() {
+        Task task = taskManager.getTask(0);
+        List<Task> history = taskManager.getHistory();
 
-        Task gottenTask = taskManager.getTask(0);
-        List<Task> updatedHistory = taskManager.getHistory();
+        int currTaskCount = 0;
+        for (Task curr : history) {
+            if (curr.equals(task)) {
+                currTaskCount++;
+            }
+        }
 
-        assertNotEquals(previousHistory, updatedHistory, "История не обновилась.");
-        assertEquals(gottenTask, updatedHistory.get(9), "Новая задача не добавилась в конец списка.");
+        assertEquals(1, currTaskCount, "Задача в истории повторяется");
     }
+
+    @Test
+    void shouldRemoveTaskFromHistory() {
+        taskManager.removeTask(0);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertFalse(history.contains(task1), "Задача не удалилась из истории");
+    }
+
+    @Test
+    void shouldRemoveAllSubTasksFromHistoryWhenEpicTaskRemoved() {
+        taskManager.removeTask(2);
+
+        List<Task> history = taskManager.getHistory();
+
+        assertFalse(history.contains(subTask1InEpicTask1), "Подзадача 1 не удалилась из истории");
+        assertFalse(history.contains(subTask2InEpicTask1), "Подзадача 2 не удалилась из истории");
+    }
+
 
     @Test
     void shouldWasPreviousVersionOfTaskInHistory() {
@@ -113,6 +137,27 @@ class InMemoryHistoryManagerTest {
         assertEquals(previousVersionOfTask1.getDescription(), task1FromHistory.getDescription(),
                 "У задач разное описание");
         assertEquals(previousVersionOfTask1.getStatus(), task1FromHistory.getStatus(),
+                "У задач разный статус");
+    }
+
+    @Test
+    void shouldWasNewVersionOfTaskInHistoryWhenTaskAddedInHistory() {
+        Task newTask1 = new Task("task10", "task10 desc", Status.IN_PROGRESS);
+        newTask1.setId(0);
+
+        taskManager.updateTask(newTask1);
+        taskManager.getTask(0);
+
+        List<Task> history = taskManager.getHistory();
+        Task task1FromHistory = history.get(history.size() - 1);
+
+        assertEquals(newTask1.getId(), task1FromHistory.getId(),
+                "У задач разный ID");
+        assertEquals(newTask1.getTitle(), task1FromHistory.getTitle(),
+                "У задачи разный заголовок");
+        assertEquals(newTask1.getDescription(), task1FromHistory.getDescription(),
+                "У задач разное описание");
+        assertEquals(newTask1.getStatus(), task1FromHistory.getStatus(),
                 "У задач разный статус");
     }
 }

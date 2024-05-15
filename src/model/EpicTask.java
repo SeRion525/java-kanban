@@ -1,6 +1,7 @@
 package model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EpicTask extends Task {
     private final List<Integer> subTasksId;
@@ -25,10 +26,6 @@ public class EpicTask extends Task {
 
     public void removeSubTask(int id) {
         subTasksId.remove(Integer.valueOf(id));
-    }
-
-    public void removeAllSubTasks() {
-        subTasksId.clear();
     }
 
     @Override
