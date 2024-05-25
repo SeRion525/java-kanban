@@ -41,7 +41,6 @@ class InMemoryTaskManagerTest {
 
         assertNotNull(createdTask, "Задача не найдена.");
         assertEquals(task1, createdTask, "Задачи не совпадают.");
-        assertInstanceOf(Task.class, createdTask, "Неверный тип задачи");
 
         List<Task> tasks = taskManager.getAllTasks();
 
@@ -52,13 +51,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void createNewEpicTask() {
-        taskManager.createTask(epicTask1);
+        taskManager.createEpicTask(epicTask1);
 
-        Task createdEpicTask = taskManager.getTask(epicTask1.getId());
+        EpicTask createdEpicTask = taskManager.getEpicTask(epicTask1.getId());
 
         assertNotNull(createdEpicTask, "Эпик не найден.");
         assertEquals(epicTask1, createdEpicTask, "Эпики не совпадают.");
-        assertInstanceOf(EpicTask.class, createdEpicTask, "Неверный тип задачи");
 
         List<EpicTask> EpicTasks = taskManager.getAllEpicTasks();
 
@@ -69,14 +67,13 @@ class InMemoryTaskManagerTest {
 
     @Test
     void createNewSubTask() {
-        taskManager.createTask(epicTask1);
-        taskManager.createTask(subTask1);
+        taskManager.createEpicTask(epicTask1);
+        taskManager.createSubTask(subTask1);
 
-        Task createdSubTask = taskManager.getTask(subTask1.getId());
+        SubTask createdSubTask = taskManager.getSubTask(subTask1.getId());
 
         assertNotNull(createdSubTask, "Подзадача не найдена.");
         assertEquals(subTask1, createdSubTask, "Подзадачи не совпадают.");
-        assertInstanceOf(SubTask.class, createdSubTask, "Неверный тип задачи");
 
         List<SubTask> subTasks = taskManager.getAllSubTasks();
 
@@ -107,8 +104,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldEqualsWhenEpicTasksHasSameId() {
-        taskManager.createTask(epicTask1);
-        taskManager.createTask(subTask1);
+        taskManager.createEpicTask(epicTask1);
+        taskManager.createSubTask(subTask1);
 
         EpicTask sameEpicTask1 = new EpicTask("EpicTask1", "EpicTask1 description");
         sameEpicTask1.setId(0);
@@ -130,8 +127,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void shouldEqualsWhenSubTasksHasSameId() {
-        taskManager.createTask(epicTask1);
-        taskManager.createTask(subTask1);
+        taskManager.createEpicTask(epicTask1);
+        taskManager.createSubTask(subTask1);
 
         SubTask sameSubTask1 = new SubTask("SubTask1", "SubTask1 description",
                 Status.NEW, epicTask1.getId());
@@ -168,14 +165,14 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateSubTask() {
-        taskManager.createTask(epicTask1);
-        taskManager.createTask(subTask1);
+        taskManager.createEpicTask(epicTask1);
+        taskManager.createSubTask(subTask1);
 
         SubTask subTask1WithNewData = new SubTask("SubTask1 new title", "SubTask1 new description",
                 Status.IN_PROGRESS, epicTask1.getId());
         subTask1WithNewData.setId(1);
 
-        taskManager.updateTask(subTask1WithNewData);
+        taskManager.updateSubTask(subTask1WithNewData);
         SubTask updatedSubTask1 = taskManager.getSubTask(1);
 
         assertEquals(subTask1WithNewData.getId(), updatedSubTask1.getId(),
@@ -196,9 +193,9 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateEpicTaskStatus() {
-        taskManager.createTask(epicTask1);
-        taskManager.createTask(subTask1);
-        taskManager.createTask(subTask2);
+        taskManager.createEpicTask(epicTask1);
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
 
         EpicTask createdEpicTask = taskManager.getEpicTask(0);
         assertEquals(Status.NEW, createdEpicTask.getStatus(), "Статус эпика должен быть NEW");
@@ -210,8 +207,8 @@ class InMemoryTaskManagerTest {
                 Status.DONE, epicTask1.getId());
         newSubTask2.setId(2);
 
-        taskManager.updateTask(newSubTask1);
-        taskManager.updateTask(newSubTask2);
+        taskManager.updateSubTask(newSubTask1);
+        taskManager.updateSubTask(newSubTask2);
 
         createdEpicTask = taskManager.getEpicTask(0);
         assertEquals(Status.IN_PROGRESS, createdEpicTask.getStatus(), "Статус эпика должен быть IN_PROGRESS");
@@ -219,7 +216,7 @@ class InMemoryTaskManagerTest {
         newSubTask1 = new SubTask("SubTask1", "SubTask1 description",
                 Status.DONE, epicTask1.getId());
         newSubTask1.setId(1);
-        taskManager.updateTask(newSubTask1);
+        taskManager.updateSubTask(newSubTask1);
 
         createdEpicTask = taskManager.getEpicTask(0);
         assertEquals(Status.DONE, createdEpicTask.getStatus(), "Статус эпика должен быть DONE");
@@ -240,12 +237,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void removeSubTask() {
-        taskManager.createTask(epicTask1);
+        taskManager.createEpicTask(epicTask1);
 
         subTask1.setStatus(Status.DONE);
-        taskManager.createTask(subTask1);
+        taskManager.createSubTask(subTask1);
 
-        taskManager.createTask(subTask2);
+        taskManager.createSubTask(subTask2);
 
         taskManager.removeTask(2);
 
@@ -261,7 +258,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void removeEpicTask() {
-        taskManager.createTask(epicTask1);
+        taskManager.createEpicTask(epicTask1);
         EpicTask createdEpicTask1 = taskManager.getEpicTask(0);
 
         SubTask subTask1 = new SubTask("SubTask1", "SubTask1 description",
@@ -269,15 +266,15 @@ class InMemoryTaskManagerTest {
         SubTask subTask2 = new SubTask("SubTask2", "SubTask2 description",
                 Status.NEW, createdEpicTask1.getId());
 
-        taskManager.createTask(subTask1);
-        taskManager.createTask(subTask2);
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
 
-        taskManager.createTask(epicTask2);
+        taskManager.createEpicTask(epicTask2);
         EpicTask createdEpicTask2 = taskManager.getEpicTask(3);
 
         SubTask subTask3 = new SubTask("SubTask3", "SubTask3 description",
                 Status.NEW, createdEpicTask2.getId());
-        taskManager.createTask(subTask3);
+        taskManager.createSubTask(subTask3);
 
         taskManager.removeTask(0);
 

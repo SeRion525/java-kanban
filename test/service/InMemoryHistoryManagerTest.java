@@ -40,8 +40,8 @@ class InMemoryHistoryManagerTest {
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
-        taskManager.createTask(epicTask1);
-        taskManager.createTask(epicTask2);
+        taskManager.createEpicTask(epicTask1);
+        taskManager.createEpicTask(epicTask2);
 
         subTask1InEpicTask1 = new SubTask("subTask1InEpicTask1", "subTask1InEpicTask1 disc",
                 Status.NEW, 2);
@@ -56,12 +56,12 @@ class InMemoryHistoryManagerTest {
         subTask6InEpicTask2 = new SubTask("subTask6InEpicTask2", "subTask6InEpicTask2 disc",
                 Status.NEW, 3);
 
-        taskManager.createTask(subTask1InEpicTask1);
-        taskManager.createTask(subTask2InEpicTask1);
-        taskManager.createTask(subTask3InEpicTask2);
-        taskManager.createTask(subTask4InEpicTask2);
-        taskManager.createTask(subTask5InEpicTask2);
-        taskManager.createTask(subTask6InEpicTask2);
+        taskManager.createSubTask(subTask1InEpicTask1);
+        taskManager.createSubTask(subTask2InEpicTask1);
+        taskManager.createSubTask(subTask3InEpicTask2);
+        taskManager.createSubTask(subTask4InEpicTask2);
+        taskManager.createSubTask(subTask5InEpicTask2);
+        taskManager.createSubTask(subTask6InEpicTask2);
 
         for (int i = 0; i < 2; i++) {
             tasks.add(taskManager.getTask(i));
