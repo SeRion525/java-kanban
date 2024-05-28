@@ -13,7 +13,8 @@ public class SubTask extends Task {
         return TaskType.SUB_TASK;
     }
 
-    public int getEpicTaskId() {
+    @Override
+    public Integer getEpicTaskId() {
         return epicTaskId;
     }
 
