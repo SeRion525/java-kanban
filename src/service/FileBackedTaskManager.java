@@ -24,8 +24,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (!Files.exists(filePath)) {
             try {
                 Files.createFile(filePath);
-            } catch (IOException e) {
-                throw new ManagerSaveException("Не смог создать файл " + filePath, e);
+            } catch (IOException exception) {
+                throw new ManagerSaveException("Не смог создать файл " + filePath, exception);
             }
         }
     }
@@ -95,14 +95,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        if (!Files.exists(filePath)) {
-            try {
-                Files.createFile(filePath);
-            } catch (IOException e) {
-                throw new ManagerSaveException("Не смог создать файл " + filePath, e);
-            }
-        }
-
         List<Task> tasks = new ArrayList<>();
         tasks.addAll(getAllTasks());
         tasks.addAll(getAllEpicTasks());
@@ -114,8 +106,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Task task : tasks) {
                 Files.writeString(filePath, TaskToStringConverter.toString(task) + "\n", APPEND);
             }
-        } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка записи в файл " + filePath, e);
+        } catch (IOException exception) {
+            throw new ManagerSaveException("Ошибка записи в файл " + filePath, exception);
         }
     }
 
@@ -126,8 +118,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try {
             strings = Files.readAllLines(filePath);
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка чтения из файла " + filePath, e);
+        } catch (IOException exception) {
+            throw new RuntimeException("Ошибка чтения из файла " + filePath, exception);
         }
 
         strings.removeFirst();
@@ -172,8 +164,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private class TasksByIdComparator implements Comparator<Task> {
 
         @Override
-        public int compare(Task t1, Task t2) {
-            return t1.getId() - t2.getId();
+        public int compare(Task task1, Task task2) {
+            return task1.getId() - task2.getId();
         }
     }
 }
