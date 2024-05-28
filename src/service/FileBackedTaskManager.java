@@ -133,12 +133,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String description = taskData[4];
             Integer epicTaskId;
 
-            if (taskData[5].equalsIgnoreCase("null")) {
-                epicTaskId = null;
-            } else {
-                epicTaskId = Integer.parseInt(taskData[5]);
-            }
-
             switch (type) {
                 case TASK:
                     Task task = new Task(title, description, status);
@@ -151,6 +145,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     taskManager.createEpicTask(epicTask);
                     break;
                 case SUB_TASK:
+                    epicTaskId = Integer.parseInt(taskData[5]);
                     SubTask subTask = new SubTask(title, description, status, epicTaskId);
                     subTask.setId(id);
                     taskManager.createSubTask(subTask);
