@@ -46,17 +46,9 @@ public class InMemoryTaskManager implements TaskManager {
         EpicTask epicTask = epicTasksById.get(epicTaskId);
 
         if (epicTask != null) {
-            List<Integer> subTasksId = epicTask.getSubTasksId();
-            List<SubTask> subTasks = new ArrayList<>();
-
-            for (int subTaskId : subTasksId) {
-                SubTask subTask = subTasksById.get(subTaskId);
-                if (subTask != null) {
-                    subTasks.add(subTask);
-                }
-            }
-
-            return subTasks;
+            return epicTask.getSubTasksId().stream()
+                    .map(subTasksById::get)
+                    .toList();
         }
 
         return null;
@@ -144,22 +136,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllTasks() {
-        for (Task task : tasksById.values()) {
-            historyManager.remove(task.getId());
-        }
+        tasksById.keySet().stream()
+                        .peek(historyManager::remove)
+                        .close();
 
         tasksById.clear();
     }
 
     @Override
     public void removeAllEpicTasks() {
-        for (EpicTask epicTask : epicTasksById.values()) {
-            historyManager.remove(epicTask.getId());
-        }
+        epicTasksById.keySet().stream()
+                .peek(historyManager::remove)
+                .close();
 
-        for (SubTask subTask : subTasksById.values()) {
-            historyManager.remove(subTask.getId());
-        }
+        subTasksById.keySet().stream()
+                .peek(historyManager::remove)
+                .close();
 
         epicTasksById.clear();
         subTasksById.clear();
