@@ -99,7 +99,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         tasks.addAll(getAllTasks());
         tasks.addAll(getAllEpicTasks());
         tasks.addAll(getAllSubTasks());
-        tasks.sort(new TasksByIdComparator());
 
         try {
             Files.writeString(filePath, "id,type,title,status,description,epic\n");
@@ -111,10 +110,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) {
-        FileBackedTaskManager taskManager = new FileBackedTaskManager(file.toPath());
-        Path filePath = file.toPath();
+    private void loadFromFile() {
         List<String> strings;
+        int lastId = 0;
 
         try {
             strings = Files.readAllLines(filePath);
@@ -133,34 +131,34 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String description = taskData[4];
             int epicTaskId;
 
+            lastId = Math.max(id, lastId);
+
             switch (type) {
                 case TASK:
                     Task task = new Task(title, description, status);
                     task.setId(id);
-                    taskManager.createTask(task);
+                    tasksById.put(id, task);
                     break;
                 case EPIC_TASK:
                     EpicTask epicTask = new EpicTask(title, description);
                     epicTask.setId(id);
-                    taskManager.createEpicTask(epicTask);
+                    epicTasksById.put(id, epicTask);
                     break;
                 case SUB_TASK:
                     epicTaskId = Integer.parseInt(taskData[5]);
                     SubTask subTask = new SubTask(title, description, status, epicTaskId);
                     subTask.setId(id);
-                    taskManager.createSubTask(subTask);
+                    subTasksById.put(id, subTask);
                     break;
             }
         }
 
-        return taskManager;
+        allTaskCount = lastId + 1;
     }
 
-    private class TasksByIdComparator implements Comparator<Task> {
-
-        @Override
-        public int compare(Task task1, Task task2) {
-            return task1.getId() - task2.getId();
-        }
+    public static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(file.toPath());
+        taskManager.loadFromFile();
+        return taskManager;
     }
 }
