@@ -1,5 +1,6 @@
 package service;
 
+import exception.NotFoundException;
 import model.EpicTask;
 import model.Status;
 import model.SubTask;
@@ -64,6 +65,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasksById.get(id);
+        if (task == null) {
+            throw new NotFoundException("Не найдена задача: " + id);
+        }
         historyManager.add(task);
         return task;
     }
@@ -71,6 +75,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public EpicTask getEpicTask(int id) {
         EpicTask epicTask = epicTasksById.get(id);
+        if (epicTask == null) {
+            throw new NotFoundException("Не найден эпик: " + id);
+        }
         historyManager.add(epicTask);
         return epicTask;
     }
@@ -78,6 +85,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask getSubTask(int id) {
         SubTask subTask = subTasksById.get(id);
+        if (subTask == null) {
+            throw new NotFoundException("Не найдена подзадача: " + id);
+        }
         historyManager.add(subTask);
         return subTask;
     }
@@ -126,10 +136,10 @@ public class InMemoryTaskManager implements TaskManager {
         subTasksById.put(subTask.getId(), subTask);
 
         EpicTask epicTask = epicTasksById.get(subTask.getEpicTaskId());
-
-        if (epicTask != null) {
-            updateEpicTaskStatus(epicTask.getId());
+        if (epicTask == null) {
+            throw new NotFoundException("Не найден эпик: " + subTask.getEpicTaskId());
         }
+        updateEpicTaskStatus(epicTask.getId());
     }
 
     @Override

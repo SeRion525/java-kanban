@@ -1,6 +1,6 @@
 package service;
 
-import exception.ManagerSaveException;
+import exception.ManagerIOException;
 import model.*;
 import util.TaskToStringConverter;
 
@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -25,7 +24,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             try {
                 Files.createFile(filePath);
             } catch (IOException exception) {
-                throw new ManagerSaveException("Не смог создать файл " + filePath, exception);
+                throw new ManagerIOException("Не смог создать файл " + filePath, exception);
             }
         }
     }
@@ -106,7 +105,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Files.writeString(filePath, TaskToStringConverter.toString(task) + "\n", APPEND);
             }
         } catch (IOException exception) {
-            throw new ManagerSaveException("Ошибка записи в файл " + filePath, exception);
+            throw new ManagerIOException("Ошибка записи в файл " + filePath, exception);
         }
     }
 
@@ -117,7 +116,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         try {
             strings = Files.readAllLines(filePath);
         } catch (IOException exception) {
-            throw new RuntimeException("Ошибка чтения из файла " + filePath, exception);
+            throw new ManagerIOException("Ошибка чтения из файла " + filePath, exception);
         }
 
         strings.removeFirst();
