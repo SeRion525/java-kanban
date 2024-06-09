@@ -6,6 +6,7 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import util.Managers;
+import util.TasksStartTimeComparator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +21,14 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Task> tasksById;
     protected final Map<Integer, EpicTask> epicTasksById;
     protected final Map<Integer, SubTask> subTasksById;
+    protected final Set<Task> sortedTasksAndSubTasks;
     protected final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         this.tasksById = new HashMap<>();
         this.epicTasksById = new HashMap<>();
         this.subTasksById = new HashMap<>();
+        this.sortedTasksAndSubTasks = new TreeSet<>(new TasksStartTimeComparator());
         this.historyManager = Managers.getDefaultHistory();
     }
 
