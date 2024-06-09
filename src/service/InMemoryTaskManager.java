@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     protected int allTaskCount = 0;
@@ -111,6 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         EpicTask epicTask = epicTasksById.get(subTask.getEpicTaskId());
         epicTask.addSubTaskId(subTask.getId());
+        updateEpicTaskTime(epicTask.getId());
     }
 
     @Override
@@ -132,6 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
             throw new NotFoundException("Не найден эпик: " + subTask.getEpicTaskId());
         }
         updateEpicTaskStatus(epicTask.getId());
+        updateEpicTaskTime(epicTask.getId());
     }
 
     @Override
@@ -165,6 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             epicTask.removeSubTask(subTask.getId());
             updateEpicTaskStatus(epicTask.getId());
+            updateEpicTaskTime(epicTask.getId());
 
             historyManager.remove(subTask.getId());
         }
@@ -193,6 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             epicTask.removeSubTask(subTask.getId());
             updateEpicTaskStatus(epicTask.getId());
+            updateEpicTaskTime(epicTask.getId());
             historyManager.remove(id);
         }
     }
@@ -237,5 +244,44 @@ public class InMemoryTaskManager implements TaskManager {
             epicTask.setStatus(Status.IN_PROGRESS);
         }
 
+    }
+
+    private void updateEpicTaskTime(int id) {
+        EpicTask epicTask = epicTasksById.get(id);
+        List<Integer> subTasksIdList = epicTask.getSubTasksId();
+
+        if (subTasksIdList.isEmpty()) {
+            return;
+        }
+
+        Duration sumDuration = Duration.ZERO;
+        LocalDateTime epicStartTime = LocalDateTime.MAX;
+        LocalDateTime epicEndTime = LocalDateTime.MIN;
+
+        for (Integer subTaskId : subTasksIdList) {
+            SubTask subTask = subTasksById.get(subTaskId);
+
+            if (subTask.getStartTime() == null) {
+                continue;
+            }
+
+            if (subTask.getStartTime().isBefore(epicStartTime)) {
+                epicStartTime = subTask.getStartTime();
+            }
+
+            if (subTask.getEndTime().isAfter(epicEndTime)) {
+                epicEndTime = subTask.getEndTime();
+            }
+
+            sumDuration = sumDuration.plus(subTask.getDuration());
+        }
+
+        if (epicStartTime.equals(LocalDateTime.MAX)) {
+            return;
+        }
+
+        epicTask.setStartTime(epicStartTime);
+        epicTask.setDuration(sumDuration);
+        epicTask.setEndTime(epicEndTime);
     }
 }
