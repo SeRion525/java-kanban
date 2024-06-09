@@ -284,4 +284,15 @@ public class InMemoryTaskManager implements TaskManager {
         epicTask.setDuration(sumDuration);
         epicTask.setEndTime(epicEndTime);
     }
+
+    private boolean isTimeIntersection(Task task1, Task task2) {
+        LocalDateTime startTime1 = task1.getStartTime();
+        LocalDateTime endTime1 = task1.getEndTime();
+        LocalDateTime startTime2 = task2.getStartTime();
+        LocalDateTime endTime2 = task2.getEndTime();
+
+        return startTime1.equals(startTime2) ||
+                (startTime1.isAfter(startTime2) && startTime1.isBefore(endTime2)) ||
+                (startTime1.isBefore(startTime2) && endTime1.isAfter(startTime2));
+    }
 }
