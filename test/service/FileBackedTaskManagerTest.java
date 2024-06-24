@@ -120,7 +120,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     void shouldThrowExceptionDuringUseFiles() {
         assertThrows(ManagerIOException.class, () -> {
-                    TaskManager testManager = new FileBackedTaskManager(Paths.get("D:/"));
+                    TaskManager testManager = new FileBackedTaskManager(Paths.get("i_hate_tests/really.csv"));
                     testManager.createTask(task);
                 },
                 "Некорректный перехват исключения при сохранении задач в файл");
