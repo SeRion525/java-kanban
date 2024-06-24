@@ -1,35 +1,80 @@
 package service;
 
+import exception.ManagerIOException;
 import model.EpicTask;
 import model.Status;
 import model.SubTask;
 import model.Task;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static util.TaskTestUtil.*;
 
-class FileBackedTaskManagerTest {
-    private FileBackedTaskManager taskManager;
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private Path tempTaskFile;
     private Task task;
     private EpicTask epicTask;
     private SubTask subTask1;
     private SubTask subTask2;
 
+    @Override
+    protected FileBackedTaskManager createManager() {
+        return new FileBackedTaskManager(tempTaskFile);
+    }
+
+    @BeforeEach
+    @Override
+    void init() {
+        try {
+            tempTaskFile = Files.createTempFile(Path.of("resources"), "tempTask", ".csv");
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось создать временный файл " + tempTaskFile, e);
+        }
+
+        manager = createManager();
+
+        task = new Task("task", "task discr", Status.NEW);
+        task.setId(0);
+        epicTask = new EpicTask("epicTask", "epicTask discr");
+        epicTask.setId(1);
+        subTask1 = new SubTask("subTask1", "subTusk1 discr", Status.NEW, 1,
+                LocalDateTime.now(), Duration.ofMinutes(1));
+        subTask1.setId(2);
+        subTask2 = new SubTask("subTask2", "subTusk2 discr", Status.NEW, 1,
+                LocalDateTime.now().plusMinutes(1), Duration.ofMinutes(1));
+        subTask2.setId(3);
+    }
+
+    @AfterEach
+    void removeTempTaskFile() {
+        try {
+            Files.delete(tempTaskFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось удалить файл " + tempTaskFile, e);
+        }
+    }
+
+    @DisplayName("Сохранить задачу в файл")
     @Test
     void shouldSaveNewTasksInFile() {
-        init();
 
-        taskManager.createTask(task);
-        taskManager.createEpicTask(epicTask);
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
+        manager.createTask(task);
+        manager.createEpicTask(epicTask);
+        manager.createSubTask(subTask1);
+        manager.createSubTask(subTask2);
 
         List<String> strings;
 
@@ -39,75 +84,48 @@ class FileBackedTaskManagerTest {
             throw new RuntimeException("Ошибка чтения из файла " + tempTaskFile, e);
         }
 
-        assertEquals("id,type,title,status,description,epic", strings.get(0), "Строчка 1 не сошлась.");
-        assertEquals("0,TASK,task,NEW,task discr,null", strings.get(1), "Строчка 2 не сошлась.");
-        assertEquals("1,EPIC_TASK,epicTask,NEW,epicTask discr,null", strings.get(2), "Строчка 3 не сошлась.");
-        assertEquals("2,SUB_TASK,subTask1,NEW,subTusk1 discr,1", strings.get(3), "Строчка 4 не сошлась.");
-        assertEquals("3,SUB_TASK,subTask2,NEW,subTusk2 discr,1", strings.get(4), "Строчка 5 не сошлась.");
-
-        try {
-            Files.delete(tempTaskFile);
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось удалить файл " + tempTaskFile, e);
-        }
-
+        assertEquals("id,type,title,status,description,epic,duration,startTime", strings.get(0),
+                "Строчка 1 не сошлась.");
+        assertEquals("0,TASK,task,NEW,task discr,null,null,null", strings.get(1),
+                "Строчка 2 не сошлась.");
+        assertEquals("1,EPIC_TASK,epicTask,NEW,epicTask discr,null," + epicTask.getDuration().toMinutes() + "," + epicTask.getStartTime().toString(),
+                strings.get(2), "Строчка 3 не сошлась.");
+        assertEquals("2,SUB_TASK,subTask1,NEW,subTusk1 discr,1," + subTask1.getDuration().toMinutes() + "," + subTask1.getStartTime().toString(),
+                strings.get(3), "Строчка 4 не сошлась.");
+        assertEquals("3,SUB_TASK,subTask2,NEW,subTusk2 discr,1," + subTask2.getDuration().toMinutes() + "," + subTask2.getStartTime().toString(),
+                strings.get(4), "Строчка 5 не сошлась.");
     }
 
+    @DisplayName("Загрузить задачу из файла")
     @Test
     void shouldLoadTasksFromFile() {
-        init();
 
-        taskManager.createTask(task);
-        taskManager.createEpicTask(epicTask);
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
+        manager.createTask(task);
+        manager.createEpicTask(epicTask);
+        manager.createSubTask(subTask1);
+        manager.createSubTask(subTask2);
 
-        taskManager = FileBackedTaskManager.loadFromFile(new File(tempTaskFile.toString()));
-        List<Task> tasks = taskManager.getAllTasks();
-        List<EpicTask> epicTasks = taskManager.getAllEpicTasks();
-        List<SubTask> subTasks = taskManager.getAllSubTasks();
+        manager = FileBackedTaskManager.loadFromFile(new File(tempTaskFile.toString()));
+        List<Task> tasks = manager.getAllTasks();
+        List<EpicTask> epicTasks = manager.getAllEpicTasks();
+        List<SubTask> subTasks = manager.getAllSubTasks();
 
-        assertTasks(task, tasks.getFirst());
-        assertTasks(epicTask, epicTasks.getFirst());
-        assertTasks(subTask1, subTasks.get(0));
-        assertTasks(subTask2, subTasks.get(1));
-
-        try {
-            Files.delete(tempTaskFile);
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось удалить файл " + tempTaskFile, e);
-        }
+        assertEqualsTask(task, tasks.getFirst(), "Задачи не равны по");
+        assertEqualsEpicTask(epicTask, epicTasks.getFirst(), "Эпики не равны по");
+        assertEqualsSubTask(subTask1, subTasks.get(0), "Подзадачи не равны по");
+        assertEqualsSubTask(subTask2, subTasks.get(1), "Подзадачи не равны по");
     }
 
-    void init() {
-        try {
-            tempTaskFile = Files.createTempFile(Path.of("resources"), "tempTask", ".csv");
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось создать временный файл " + tempTaskFile, e);
-        }
+    @DisplayName("Перехват исключений при работе с файлами")
+    @Test
+    void shouldThrowExceptionDuringUseFiles() {
+        assertThrows(ManagerIOException.class, () -> {
+                    TaskManager testManager = new FileBackedTaskManager(Paths.get("D:/"));
+                    testManager.createTask(task);
+                },
+                "Некорректный перехват исключения при сохранении задач в файл");
 
-        taskManager = new FileBackedTaskManager(tempTaskFile);
-
-        task = new Task("task", "task discr", Status.NEW);
-        task.setId(0);
-        epicTask = new EpicTask("epicTask", "epicTask discr");
-        epicTask.setId(1);
-        subTask1 = new SubTask("subTask1", "subTusk1 discr", Status.NEW, 1);
-        subTask1.setId(2);
-        subTask2 = new SubTask("subTask2", "subTusk2 discr", Status.NEW, 1);
-        subTask2.setId(3);
-    }
-
-    void assertTasks(Task task1, Task task2) {
-        assertEquals(task1.getId(), task2.getId(),
-                "У подзадач разный ID");
-        assertEquals(task1.getTitle(), task2.getTitle(),
-                "У подзадач разный заголовок");
-        assertEquals(task1.getDescription(), task2.getDescription(),
-                "У подзадач разное описание");
-        assertEquals(task1.getStatus(), task2.getStatus(),
-                "У подзадач разный статус");
-        assertEquals(task1.getEpicTaskId(), task2.getEpicTaskId(),
-                "У подзадач разные id эпика");
+        assertThrows(ManagerIOException.class, () -> FileBackedTaskManager.loadFromFile(new File("D:/")),
+                "Некорректный перехват исключения при загрузке задач из файла");
     }
 }
