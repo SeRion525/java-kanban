@@ -19,10 +19,9 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String title, String description, int id, Status status, LocalDateTime startTime, Duration duration) {
+    public Task(String title, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.title = title;
         this.description = description;
-        this.id = id;
         this.status = status;
         this.startTime = startTime;
         this.duration = duration;
