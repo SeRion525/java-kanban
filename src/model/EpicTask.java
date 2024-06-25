@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,18 @@ public class EpicTask extends Task {
 
     public void removeSubTask(int id) {
         subTasksId.remove(Integer.valueOf(id));
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        super.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        super.duration = duration;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        super.endTime = endTime;
     }
 
     @Override
