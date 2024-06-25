@@ -185,14 +185,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         subTask = new SubTask(title, description, status, epicTaskId, startTime, duration);
                         subTask.setId(id);
                         epicTasksById.get(epicTaskId).addSubTaskId(id);
-                        //updateEpicTaskTime(epicTaskId);
                     } else {
                         subTask = new SubTask(title, description, status, epicTaskId);
                         subTask.setId(id);
                         epicTasksById.get(epicTaskId).addSubTaskId(id);
                     }
 
-                    //updateEpicTaskStatus(epicTaskId);
                     subTasksById.put(id, subTask);
                     break;
             }
