@@ -421,6 +421,9 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         @DisplayName("Пересечение по времени при обновлении задачи")
         @Test
         void shouldThrowExceptionWhenIsTimeIntersectionDuringUpdate() {
+            Task task2 = new Task("task2", "task2 d", Status.NEW, task1.getStartTime().plusMinutes(2), Duration.ofMinutes(2));
+            manager.createTask(task2);
+
             assertDoesNotThrow(() -> {
                         Task updatedTask1 = copyTask(task1);
                         updatedTask1.setTitle("updatedTask1");
@@ -429,21 +432,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
                     "Выбросилось исключение при неизменном времени");
 
             assertThrows(ValidationException.class, () -> {
-                        Task updatedTask1 = new Task("task1", "task1 d", Status.NEW, task1.getStartTime().minusMinutes(1), Duration.ofMinutes(2));
+                        Task updatedTask1 = new Task("task1", "task1 d", Status.NEW, task2.getStartTime().minusMinutes(1), Duration.ofMinutes(2));
                         updatedTask1.setId(task1.getId());
                         manager.updateTask(updatedTask1);
                     },
                     "Не выбросилось исключение когда вторая задача началась раньше первой, но не закончилась");
 
             assertThrows(ValidationException.class, () -> {
-                        Task updatedTask1 = new Task("task1", "task1 d", Status.NEW, task1.getStartTime().plusMinutes(1), Duration.ofMinutes(2));
+                        Task updatedTask1 = new Task("task1", "task1 d", Status.NEW, task2.getStartTime().plusMinutes(1), Duration.ofMinutes(2));
                         updatedTask1.setId(task1.getId());
                         manager.updateTask(updatedTask1);
                     },
                     "Не выбросилось исключение когда вторая задача началась позже первой, но первая не закончилась");
 
             assertDoesNotThrow(() -> {
-                        Task updatedTask1 = new Task("task1", "task1 d", Status.NEW, task1.getStartTime().plusMinutes(2), Duration.ofMinutes(2));
+                        Task updatedTask1 = new Task("task1", "task1 d", Status.NEW, task2.getStartTime().plusMinutes(2), Duration.ofMinutes(2));
                         updatedTask1.setId(task1.getId());
                         manager.updateTask(updatedTask1);
                     },
