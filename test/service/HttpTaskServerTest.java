@@ -19,10 +19,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static util.TaskTestUtil.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpTaskServerTest {
     TaskManager taskManager = new InMemoryTaskManager();
@@ -45,7 +44,7 @@ public class HttpTaskServerTest {
     }
 
     @Nested
-    @DisplayName( "Тестировать обработчик задач" )
+    @DisplayName("Тестировать обработчик задач")
     class TaskHandlerTest {
         Task task;
         String urlString = serverAddress + "/tasks";
@@ -58,7 +57,7 @@ public class HttpTaskServerTest {
             taskJson = gson.toJson(task);
         }
 
-        @DisplayName( "Создать задачу ")
+        @DisplayName("Создать задачу ")
         @Test
         void shouldCreateTask() throws IOException, InterruptedException {
             HttpResponse<String> response = sendPostRequest(tasksUrl, taskJson);
@@ -73,7 +72,7 @@ public class HttpTaskServerTest {
             assertEqualsTask(createdTask, tasks.getFirst(), "Вернулась неккоректная задача");
         }
 
-        @DisplayName( "Обновить задачу ")
+        @DisplayName("Обновить задачу ")
         @Test
         void shouldUpdateTask() throws IOException, InterruptedException {
             Task createdtask = gson.fromJson(sendPostRequest(tasksUrl, taskJson).body(), Task.class);
@@ -93,7 +92,7 @@ public class HttpTaskServerTest {
             assertEqualsTask(taskToUpdate, updatedTask, "Вернулась неккоректная задача");
         }
 
-        @DisplayName( "Получить список задач" )
+        @DisplayName("Получить список задач")
         @Test
         void shouldGetTasksList() throws IOException, InterruptedException {
             sendPostRequest(tasksUrl, taskJson);
@@ -109,7 +108,7 @@ public class HttpTaskServerTest {
             assertEqualsTask(taskManager.getAllTasks().getFirst(), gottenTasks.getFirst(), "В вернувшемся списке неккоректные задачи");
         }
 
-        @DisplayName( "Получить задачу по ID" )
+        @DisplayName("Получить задачу по ID")
         @Test
         void shouldGetTaskById() throws IOException, InterruptedException {
             sendPostRequest(tasksUrl, taskJson);
@@ -124,7 +123,7 @@ public class HttpTaskServerTest {
             assertEqualsTask(taskManager.getTask(1), gottenTask, "Вернулась неккоректная задача");
         }
 
-        @DisplayName( "Удалить задачу по ID" )
+        @DisplayName("Удалить задачу по ID")
         @Test
         void shouldRemoveTaskById() throws IOException, InterruptedException {
             sendPostRequest(tasksUrl, taskJson);
@@ -137,7 +136,7 @@ public class HttpTaskServerTest {
     }
 
     @Nested
-    @DisplayName( "Тестировать обработчики эпиков и подзадач" )
+    @DisplayName("Тестировать обработчики эпиков и подзадач")
     class EpicTaskAndSubTaskHandlersTest {
         EpicTask epicTask;
         SubTask subTask1;
@@ -164,9 +163,9 @@ public class HttpTaskServerTest {
         }
 
         @Nested
-        @DisplayName( "Тестировать обработчик эпиков" )
+        @DisplayName("Тестировать обработчик эпиков")
         class EpicTaskHandlerTest {
-            @DisplayName( "Создать эпик" )
+            @DisplayName("Создать эпик")
             @Test
             void shouldCreateEpicTask() throws IOException, InterruptedException {
                 HttpResponse<String> response = sendPostRequest(epicsUrl, epicTaskJson);
@@ -181,7 +180,7 @@ public class HttpTaskServerTest {
                 assertEqualsEpicTask(createdEpicTask, epicTasks.getFirst(), "Вернулся неккоректный эпик");
             }
 
-            @DisplayName( "Обновить эпик ")
+            @DisplayName("Обновить эпик ")
             @Test
             void shouldUpdateEpicTask() throws IOException, InterruptedException {
                 EpicTask createdEpicTask = gson.fromJson(sendPostRequest(epicsUrl, epicTaskJson).body(), EpicTask.class);
@@ -201,7 +200,7 @@ public class HttpTaskServerTest {
                 assertEqualsEpicTask(epicTaskToUpdate, updatedEpicTask, "Вернулся неккоректный эпик");
             }
 
-            @DisplayName( "Получить список эпиков" )
+            @DisplayName("Получить список эпиков")
             @Test
             void shouldGetEpicTasksList() throws IOException, InterruptedException {
                 sendPostRequest(epicsUrl, epicTaskJson);
@@ -217,7 +216,7 @@ public class HttpTaskServerTest {
                 assertEqualsEpicTask(taskManager.getAllEpicTasks().getFirst(), gottenEpicTasks.getFirst(), "В вернувшемся списке неккоректные эпики");
             }
 
-            @DisplayName( "Получить задачу по ID" )
+            @DisplayName("Получить задачу по ID")
             @Test
             void shouldGetEpicTaskById() throws IOException, InterruptedException {
                 sendPostRequest(epicsUrl, epicTaskJson);
@@ -232,7 +231,7 @@ public class HttpTaskServerTest {
                 assertEqualsTask(taskManager.getEpicTask(1), gottenEpicTask, "Вернулся неккоректный эпик");
             }
 
-            @DisplayName( "Получить список подзадач по ID" )
+            @DisplayName("Получить список подзадач по ID")
             @Test
             void shouldGetSubTasksListById() throws IOException, InterruptedException {
                 sendPostRequest(epicsUrl, epicTaskJson);
@@ -250,7 +249,7 @@ public class HttpTaskServerTest {
                         "В вернувшемся списке неккоректные подзадачи");
             }
 
-            @DisplayName( "Удалить эпик по ID" )
+            @DisplayName("Удалить эпик по ID")
             @Test
             void shouldRemoveEpicTaskById() throws IOException, InterruptedException {
                 sendPostRequest(epicsUrl, epicTaskJson);
@@ -263,14 +262,14 @@ public class HttpTaskServerTest {
         }
 
         @Nested
-        @DisplayName( "Тестировать обработчик подзадач" )
+        @DisplayName("Тестировать обработчик подзадач")
         class SubTaskHandlerTest {
             @BeforeEach
-            void setup() throws IOException, InterruptedException{
+            void setup() throws IOException, InterruptedException {
                 sendPostRequest(epicsUrl, epicTaskJson);
             }
 
-            @DisplayName( "Создать подзадачу ")
+            @DisplayName("Создать подзадачу ")
             @Test
             void shouldCreateSubTask() throws IOException, InterruptedException {
                 HttpResponse<String> response = sendPostRequest(subtasksUrl, subTask1Json);
@@ -285,7 +284,7 @@ public class HttpTaskServerTest {
                 assertEqualsSubTask(createdSubTask, subTasks.getFirst(), "Вернулась неккоректная подзадача");
             }
 
-            @DisplayName( "Обновить подзадачу ")
+            @DisplayName("Обновить подзадачу ")
             @Test
             void shouldUpdateSubTask() throws IOException, InterruptedException {
                 SubTask createdSubTask = gson.fromJson(sendPostRequest(subtasksUrl, subTask1Json).body(), SubTask.class);
@@ -311,7 +310,7 @@ public class HttpTaskServerTest {
                 assertEquals(subTask1.getDuration(), updatedEpicTask.getDuration(), "Продолжительность эпика не обновилась");
             }
 
-            @DisplayName( "Получить список подзадач" )
+            @DisplayName("Получить список подзадач")
             @Test
             void shouldGetSubTasksList() throws IOException, InterruptedException {
                 sendPostRequest(subtasksUrl, subTask1Json);
@@ -327,7 +326,7 @@ public class HttpTaskServerTest {
                 assertEqualsSubTask(taskManager.getAllSubTasks().getFirst(), gottenSubTasks.getFirst(), "В вернувшемся списке неккоректные подзадачи");
             }
 
-            @DisplayName( "Получить подзадачу по ID" )
+            @DisplayName("Получить подзадачу по ID")
             @Test
             void shouldGetSubTaskById() throws IOException, InterruptedException {
                 sendPostRequest(subtasksUrl, subTask1Json);
@@ -342,7 +341,7 @@ public class HttpTaskServerTest {
                 assertEqualsSubTask(taskManager.getSubTask(2), gottenSubTask, "Вернулась неккоректная подзадача");
             }
 
-            @DisplayName( "Удалить подзадачу по ID" )
+            @DisplayName("Удалить подзадачу по ID")
             @Test
             void shouldRemoveSubTaskById() throws IOException, InterruptedException {
                 sendPostRequest(subtasksUrl, subTask1Json);
@@ -356,7 +355,7 @@ public class HttpTaskServerTest {
     }
 
     @Nested
-    @DisplayName( "Тестировать обработчик истории" )
+    @DisplayName("Тестировать обработчик истории")
     class HistoryHandlerTest {
         Task task;
         String historyUrlString = serverAddress + "/history";
@@ -369,7 +368,7 @@ public class HttpTaskServerTest {
             sendGetRequest(URI.create(serverAddress + "/tasks/1"));
         }
 
-        @DisplayName( "Получить историю" )
+        @DisplayName("Получить историю")
         @Test
         void shouldGetHistory() throws IOException, InterruptedException {
             HttpResponse<String> response = sendGetRequest(historyUrl);
@@ -385,7 +384,7 @@ public class HttpTaskServerTest {
     }
 
     @Nested
-    @DisplayName( "Тестирование обработчика задач по приоритету" )
+    @DisplayName("Тестирование обработчика задач по приоритету")
     class PrioritizedHandlerTest {
         Task task1;
         Task task2;
@@ -400,7 +399,7 @@ public class HttpTaskServerTest {
             sendPostRequest(URI.create(serverAddress + "/tasks"), gson.toJson(task1));
         }
 
-        @DisplayName( "Получить список задач по приоритету" )
+        @DisplayName("Получить список задач по приоритету")
         @Test
         void shouldGetPrioritized() throws IOException, InterruptedException {
             HttpResponse<String> response = sendGetRequest(prioritizedUrl);
@@ -418,15 +417,15 @@ public class HttpTaskServerTest {
     }
 
     @Nested
-    @DisplayName( "Тестировать коды ошибок" )
+    @DisplayName("Тестировать коды ошибок")
     class ErrorCodesTest {
-        @DisplayName( "Не найден ресурс" )
+        @DisplayName("Не найден ресурс")
         @Test
-        void shouldNotFound() throws IOException, InterruptedException{
+        void shouldNotFound() throws IOException, InterruptedException {
             assertEquals(404, sendGetRequest(URI.create(serverAddress + "/test")).statusCode(), "Неверный код статуса при ненайденном ресурсе");
         }
 
-        @DisplayName( "Не найдена задача" )
+        @DisplayName("Не найдена задача")
         @Test
         void shouldNotFoundWhenTaskNotFound() throws IOException, InterruptedException {
             HttpResponse<String> response = sendGetRequest(URI.create(serverAddress + "/tasks/1"));
@@ -442,7 +441,7 @@ public class HttpTaskServerTest {
             assertEquals(404, response.statusCode(), "Неверный код статуса при ненайденной подзадаче");
         }
 
-        @DisplayName( "Пересечение задач при создании" )
+        @DisplayName("Пересечение задач при создании")
         @Test
         void shouldNotAcceptableWhenTimeIntersectionOnCreate() throws IOException, InterruptedException {
             Task task1 = new Task("task1 title", "task1 descr", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(1));
@@ -461,7 +460,7 @@ public class HttpTaskServerTest {
             assertEquals(406, response.statusCode(), "Неверный код статуса при пересечении при создании подзадачи");
         }
 
-        @DisplayName( "Пересечение задач при обновлении" )
+        @DisplayName("Пересечение задач при обновлении")
         @Test
         void shouldNotAcceptableWhenTimeIntersectionOnUpdate() throws IOException, InterruptedException {
             Task task = new Task("task title", "task descr", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(1));
@@ -487,7 +486,7 @@ public class HttpTaskServerTest {
             assertEquals(406, response.statusCode(), "Неверный код статуса при пересечении при обновлении подзадачи");
         }
 
-        @DisplayName( "Передать неиспользуемый метод запроса" )
+        @DisplayName("Передать неиспользуемый метод запроса")
         @Test
         void shouldBadRequestWhenUnusualRequestMethod() throws IOException, InterruptedException {
             HttpResponse<String> response = sendHeadRequest(URI.create(serverAddress + "/tasks"));
@@ -500,7 +499,7 @@ public class HttpTaskServerTest {
             assertEquals(400, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке списка задач по приоритету");
         }
 
-        @DisplayName( "Передать неккоректное тело запроса" )
+        @DisplayName("Передать неккоректное тело запроса")
         @Test
         void shouldBadRequestWhenIncorrectRequestBody() throws IOException, InterruptedException {
             HttpResponse<String> response = sendPostRequest(URI.create(serverAddress + "/tasks"), "");
@@ -523,7 +522,7 @@ public class HttpTaskServerTest {
             assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке подзадачи");
         }
 
-        @DisplayName( "Передать неккоректный тип ID" )
+        @DisplayName("Передать неккоректный тип ID")
         @Test
         void shouldBadRequestWhenWrongIdType() throws IOException, InterruptedException {
             Task task = new Task("task title", "task descr", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(1));
@@ -548,22 +547,22 @@ public class HttpTaskServerTest {
         }
     }
 
-    private HttpResponse<String> sendPostRequest(URI url, String body) throws IOException, InterruptedException{
+    private HttpResponse<String> sendPostRequest(URI url, String body) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(body)).build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private HttpResponse<String> sendGetRequest(URI url) throws IOException, InterruptedException{
+    private HttpResponse<String> sendGetRequest(URI url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private HttpResponse<String> sendDeleteRequest(URI url) throws IOException, InterruptedException{
+    private HttpResponse<String> sendDeleteRequest(URI url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private HttpResponse<String> sendHeadRequest(URI url) throws IOException, InterruptedException{
+    private HttpResponse<String> sendHeadRequest(URI url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder().uri(url).HEAD().build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }

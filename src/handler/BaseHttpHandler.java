@@ -16,7 +16,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
     public static final int HTTP_NOT_FOUND = 404;
     public static final int HTTP_NOT_ACCEPTABLE = 406;
     public static final int HTTP_INTERNAL_SERVER_ERROR = 500;
-    public static final int HTTP_BAD_GATEWAY= 502;
+    public static final int HTTP_BAD_GATEWAY = 502;
     public static final String GET = "GET";
     public static final String POST = "POST";
     public static final String DELETE = "DELETE";

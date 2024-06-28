@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 import static handler.BaseHttpHandler.*;
 
-public class ErrorHandler  {
+public class ErrorHandler {
     private final Gson gson;
 
     public ErrorHandler(Gson gson) {

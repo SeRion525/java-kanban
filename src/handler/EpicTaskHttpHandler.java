@@ -5,7 +5,6 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import model.EpicTask;
 import model.SubTask;
-import model.Task;
 import service.TaskManager;
 
 import java.io.IOException;
@@ -93,7 +92,7 @@ public class EpicTaskHttpHandler extends TaskHttpHandler {
         sendText(exchange, HTTP_NO_CONTENT);
     }
 
-    private void getSubTaskByEpicTaskId(HttpExchange exchange, int id) throws IOException{
+    private void getSubTaskByEpicTaskId(HttpExchange exchange, int id) throws IOException {
         List<SubTask> subTasks = taskManager.getSubTasksFromEpicTaskId(id);
         sendText(exchange, HTTP_OK, gson.toJson(subTasks));
     }

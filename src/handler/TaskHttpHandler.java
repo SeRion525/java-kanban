@@ -35,7 +35,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
         }
     }
 
-    protected void handleGetMethod(HttpExchange exchange) throws IOException{
+    protected void handleGetMethod(HttpExchange exchange) throws IOException {
         String[] pathSplit = exchange.getRequestURI().getPath().split("/");
 
         if (pathSplit.length == 2) {
@@ -76,7 +76,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
         }
     }
 
-    protected void getAll(HttpExchange exchange) throws IOException{
+    protected void getAll(HttpExchange exchange) throws IOException {
         List<Task> tasks = taskManager.getAllTasks();
         sendText(exchange, HTTP_OK, gson.toJson(tasks));
     }
@@ -86,7 +86,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
         sendText(exchange, HTTP_OK, gson.toJson(task));
     }
 
-    protected void createAndUpdate(HttpExchange exchange) throws IOException{
+    protected void createAndUpdate(HttpExchange exchange) throws IOException {
         String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
 
         if (requestBody.equalsIgnoreCase("null") || requestBody.isEmpty() || requestBody.isBlank()) {
@@ -111,7 +111,7 @@ public class TaskHttpHandler extends BaseHttpHandler {
         }
     }
 
-    protected void remove(HttpExchange exchange, int id) throws IOException{
+    protected void remove(HttpExchange exchange, int id) throws IOException {
         taskManager.removeTask(id);
         sendText(exchange, HTTP_NO_CONTENT);
     }
