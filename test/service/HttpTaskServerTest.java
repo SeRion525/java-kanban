@@ -6,9 +6,9 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.*;
-import type_token.EpicTaskTypeToken;
-import type_token.SubTaskListTypeToken;
-import type_token.TaskListTypeToken;
+import typeToken.EpicTaskTypeToken;
+import typeToken.SubTaskListTypeToken;
+import typeToken.TaskListTypeToken;
 
 import java.io.IOException;
 import java.net.URI;

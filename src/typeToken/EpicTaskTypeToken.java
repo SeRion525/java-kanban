@@ -1,4 +1,4 @@
-package type_token;
+package typeToken;
 
 import com.google.gson.reflect.TypeToken;
 import model.EpicTask;
