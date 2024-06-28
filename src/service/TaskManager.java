@@ -31,11 +31,11 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    void updateTask(Task task);
+    Task updateTask(Task task);
 
-    void updateEpicTask(EpicTask epicTask);
+    EpicTask updateEpicTask(EpicTask epicTask);
 
-    void updateSubTask(SubTask subTask);
+    SubTask updateSubTask(SubTask subTask);
 
     void removeAllTasks();
 

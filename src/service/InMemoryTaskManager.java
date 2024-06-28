@@ -146,7 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public Task updateTask(Task task) {
         Task oldTask = tasksById.get(task.getId());
 
         if (task.getStartTime() != null) {
@@ -162,12 +162,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpicTask(EpicTask epicTask) {
+    public EpicTask updateEpicTask(EpicTask epicTask) {
         epicTasksById.put(epicTask.getId(), epicTask);
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public SubTask updateSubTask(SubTask subTask) {
         SubTask oldSubTask = subTasksById.get(subTask.getId());
 
         if (subTask.getStartTime() != null) {
