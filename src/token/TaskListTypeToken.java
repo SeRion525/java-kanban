@@ -1,4 +1,4 @@
-package typeToken;
+package token;
 
 import com.google.gson.reflect.TypeToken;
 import model.Task;
