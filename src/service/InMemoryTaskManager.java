@@ -360,13 +360,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     private boolean isValidateTime(Task task) {
         return getPrioritizedTasks().stream()
-                .anyMatch(savedTask -> {
-                    if (task.getStartTime().equals(savedTask.getStartTime()) &&
-                            task.getEndTime().equals(savedTask.getEndTime())) {
-                        return true;
-                    } else {
-                        return !isTimeIntersection(task, savedTask);
-                    }
+                .filter(savedTask -> !task.equals(savedTask))
+                .noneMatch(savedTask -> {
+                    return isTimeIntersection(savedTask, task);
                 });
     }
 
@@ -377,6 +373,7 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTime2 = task2.getEndTime();
 
         return startTime1.equals(startTime2) ||
+                endTime1.equals(endTime2) ||
                 (startTime1.isAfter(startTime2) && startTime1.isBefore(endTime2)) ||
                 (startTime1.isBefore(startTime2) && endTime1.isAfter(startTime2));
     }
