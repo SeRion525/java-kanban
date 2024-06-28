@@ -7,7 +7,6 @@ import service.FileBackedTaskManager;
 import java.io.File;
 
 public class Main {
-
     public static void main(String[] args) {
         FileBackedTaskManager taskManager = new FileBackedTaskManager();
         taskManager.createTask(new Task("task1", "task1 discr", Status.NEW));

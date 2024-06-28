@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected int allTaskCount = 0;
+    protected int allTaskCount = 1;
     protected final Map<Integer, Task> tasksById;
     protected final Map<Integer, EpicTask> epicTasksById;
     protected final Map<Integer, SubTask> subTasksById;
