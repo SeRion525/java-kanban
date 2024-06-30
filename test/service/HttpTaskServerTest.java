@@ -19,16 +19,20 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
+import static handler.BaseHttpHandler.HTTP_BAD_REQUEST;
+import static handler.BaseHttpHandler.HTTP_NOT_ACCEPTABLE;
+import static handler.BaseHttpHandler.HTTP_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static util.TaskTestUtil.*;
 
 public class HttpTaskServerTest {
-    TaskManager taskManager = new InMemoryTaskManager();
-    HttpTaskServer httpTaskServer = new HttpTaskServer(taskManager);
-    HttpClient httpClient = HttpClient.newHttpClient();
-    Gson gson = HttpTaskServer.getGson();
-    String serverAddress = "http://localhost:8080";
+    private TaskManager taskManager = new InMemoryTaskManager();
+    private HttpTaskServer httpTaskServer = new HttpTaskServer(taskManager);
+    private HttpClient httpClient = HttpClient.newHttpClient();
+    private Gson gson = HttpTaskServer.getGson();
+    private String serverAddress = "http://localhost:8080";
 
     @BeforeEach
     void setup() {
@@ -419,26 +423,27 @@ public class HttpTaskServerTest {
     @Nested
     @DisplayName("Тестировать коды ошибок")
     class ErrorCodesTest {
+
         @DisplayName("Не найден ресурс")
         @Test
         void shouldNotFound() throws IOException, InterruptedException {
-            assertEquals(404, sendGetRequest(URI.create(serverAddress + "/test")).statusCode(), "Неверный код статуса при ненайденном ресурсе");
+            assertEquals(HTTP_NOT_FOUND, sendGetRequest(URI.create(serverAddress + "/test")).statusCode(), "Неверный код статуса при ненайденном ресурсе");
         }
 
         @DisplayName("Не найдена задача")
         @Test
         void shouldNotFoundWhenTaskNotFound() throws IOException, InterruptedException {
             HttpResponse<String> response = sendGetRequest(URI.create(serverAddress + "/tasks/1"));
-            assertEquals(404, response.statusCode(), "Неверный код статуса при ненайденной задаче");
+            assertEquals(HTTP_NOT_FOUND, response.statusCode(), "Неверный код статуса при ненайденной задаче");
 
             response = sendGetRequest(URI.create(serverAddress + "/epics/1"));
-            assertEquals(404, response.statusCode(), "Неверный код статуса при ненайденном эпике");
+            assertEquals(HTTP_NOT_FOUND, response.statusCode(), "Неверный код статуса при ненайденном эпике");
 
             response = sendGetRequest(URI.create(serverAddress + "/epics/1/subtasks"));
-            assertEquals(404, response.statusCode(), "Неверный код статуса при ненайденном эпике");
+            assertEquals(HTTP_NOT_FOUND, response.statusCode(), "Неверный код статуса при ненайденном эпике");
 
             response = sendGetRequest(URI.create(serverAddress + "/subtasks/1"));
-            assertEquals(404, response.statusCode(), "Неверный код статуса при ненайденной подзадаче");
+            assertEquals(HTTP_NOT_FOUND, response.statusCode(), "Неверный код статуса при ненайденной подзадаче");
         }
 
         @DisplayName("Пересечение задач при создании")
@@ -454,10 +459,10 @@ public class HttpTaskServerTest {
             sendPostRequest(URI.create(serverAddress + "/epics"), gson.toJson(epicTask));
 
             HttpResponse<String> response = sendPostRequest(URI.create(serverAddress + "/tasks"), gson.toJson(task2));
-            assertEquals(406, response.statusCode(), "Неверный код статуса при пересечении при создании задачи");
+            assertEquals(HTTP_NOT_ACCEPTABLE, response.statusCode(), "Неверный код статуса при пересечении при создании задачи");
 
             response = sendPostRequest(URI.create(serverAddress + "/subtasks"), gson.toJson(subTask));
-            assertEquals(406, response.statusCode(), "Неверный код статуса при пересечении при создании подзадачи");
+            assertEquals(HTTP_NOT_ACCEPTABLE, response.statusCode(), "Неверный код статуса при пересечении при создании подзадачи");
         }
 
         @DisplayName("Пересечение задач при обновлении")
@@ -476,50 +481,50 @@ public class HttpTaskServerTest {
             task.setId(1);
 
             HttpResponse<String> response = sendPostRequest(URI.create(serverAddress + "/tasks"), gson.toJson(task));
-            assertEquals(406, response.statusCode(), "Неверный код статуса при пересечении при обновлении задачи");
+            assertEquals(HTTP_NOT_ACCEPTABLE, response.statusCode(), "Неверный код статуса при пересечении при обновлении задачи");
 
             subTask = new SubTask("subTask1 title", "subTask1 descr", Status.NEW, 2,
                     taskManager.getTask(1).getStartTime(), Duration.ofMinutes(1));
             subTask.setId(3);
 
             response = sendPostRequest(URI.create(serverAddress + "/subtasks"), gson.toJson(subTask));
-            assertEquals(406, response.statusCode(), "Неверный код статуса при пересечении при обновлении подзадачи");
+            assertEquals(HTTP_NOT_ACCEPTABLE, response.statusCode(), "Неверный код статуса при пересечении при обновлении подзадачи");
         }
 
         @DisplayName("Передать неиспользуемый метод запроса")
         @Test
         void shouldBadRequestWhenUnusualRequestMethod() throws IOException, InterruptedException {
             HttpResponse<String> response = sendHeadRequest(URI.create(serverAddress + "/tasks"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке задач");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке задач");
 
             response = sendHeadRequest(URI.create(serverAddress + "/history"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке истории");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке истории");
 
             response = sendHeadRequest(URI.create(serverAddress + "/prioritized"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке списка задач по приоритету");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неиспользуемом теле запроса при обработке списка задач по приоритету");
         }
 
         @DisplayName("Передать неккоректное тело запроса")
         @Test
         void shouldBadRequestWhenIncorrectRequestBody() throws IOException, InterruptedException {
             HttpResponse<String> response = sendPostRequest(URI.create(serverAddress + "/tasks"), "");
-            assertEquals(400, response.statusCode(), "Неверный код статуса при пустом теле запроса при обработке задачи");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при пустом теле запроса при обработке задачи");
 
             response = sendPostRequest(URI.create(serverAddress + "/epics"), "");
-            assertEquals(400, response.statusCode(), "Неверный код статуса при пустом теле запроса при обработке эпика");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при пустом теле запроса при обработке эпика");
 
             response = sendPostRequest(URI.create(serverAddress + "/subtasks"), "");
-            assertEquals(400, response.statusCode(), "Неверный код статуса при пустом теле запроса при обработке подзадачи");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при пустом теле запроса при обработке подзадачи");
 
 
             response = sendPostRequest(URI.create(serverAddress + "/tasks"), "test");
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке задачи");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке задачи");
 
             response = sendPostRequest(URI.create(serverAddress + "/epics"), "test");
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке эпика");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке эпика");
 
             response = sendPostRequest(URI.create(serverAddress + "/subtasks"), "test");
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке подзадачи");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном теле запроса при обработке подзадачи");
         }
 
         @DisplayName("Передать неккоректный тип ID")
@@ -534,16 +539,16 @@ public class HttpTaskServerTest {
             sendPostRequest(URI.create(serverAddress + "/subtasks"), gson.toJson(subTask));
 
             HttpResponse<String> response = sendGetRequest(URI.create(serverAddress + "/tasks/xd"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении задачи");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении задачи");
 
             response = sendGetRequest(URI.create(serverAddress + "/epics/xd"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении эпика");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении эпика");
 
             response = sendGetRequest(URI.create(serverAddress + "/subtasks/xd"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении подзадачи");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении подзадачи");
 
             response = sendGetRequest(URI.create(serverAddress + "/epics/xd/subtasks"));
-            assertEquals(400, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении списка подазадач у эпика");
+            assertEquals(HTTP_BAD_REQUEST, response.statusCode(), "Неверный код статуса при неккоректном типе ID при получении списка подазадач у эпика");
         }
     }
 
