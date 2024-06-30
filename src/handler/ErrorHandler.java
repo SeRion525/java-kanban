@@ -9,7 +9,11 @@ import exception.ValidationException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static handler.BaseHttpHandler.*;
+import static handler.BaseHttpHandler.HTTP_BAD_GATEWAY;
+import static handler.BaseHttpHandler.HTTP_INTERNAL_SERVER_ERROR;
+import static handler.BaseHttpHandler.HTTP_NOT_ACCEPTABLE;
+import static handler.BaseHttpHandler.HTTP_NOT_FOUND;
+
 
 public class ErrorHandler {
     private final Gson gson;
