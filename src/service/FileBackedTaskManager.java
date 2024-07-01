@@ -1,7 +1,11 @@
 package service;
 
 import exception.ManagerIOException;
-import model.*;
+import model.EpicTask;
+import model.Status;
+import model.SubTask;
+import model.Task;
+import model.TaskType;
 import util.TaskToStringConverter;
 
 import java.io.File;
@@ -58,21 +62,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public Task updateTask(Task task) {
         super.updateTask(task);
         save();
+        return task;
     }
 
     @Override
-    public void updateEpicTask(EpicTask epicTask) {
+    public EpicTask updateEpicTask(EpicTask epicTask) {
         super.updateEpicTask(epicTask);
         save();
+        return epicTask;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public SubTask updateSubTask(SubTask subTask) {
         super.updateSubTask(subTask);
         save();
+        return subTask;
     }
 
     @Override

@@ -11,10 +11,16 @@ import util.TasksStartTimeComparator;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 public class InMemoryTaskManager implements TaskManager {
-    protected int allTaskCount = 0;
+    protected int allTaskCount = 1;
     protected final Map<Integer, Task> tasksById;
     protected final Map<Integer, EpicTask> epicTasksById;
     protected final Map<Integer, SubTask> subTasksById;
@@ -52,9 +58,9 @@ public class InMemoryTaskManager implements TaskManager {
             return epicTask.getSubTasksId().stream()
                     .map(subTasksById::get)
                     .toList();
+        } else {
+            throw new NotFoundException("Не найден эпик: " + epicTaskId);
         }
-
-        return null;
     }
 
     @Override
@@ -138,6 +144,9 @@ public class InMemoryTaskManager implements TaskManager {
         subTasksById.put(taskId, subTask);
 
         EpicTask epicTask = epicTasksById.get(subTask.getEpicTaskId());
+        if (epicTask == null) {
+            throw new NotFoundException("Не найден эпик: " + subTask.getEpicTaskId());
+        }
         epicTask.addSubTaskId(subTask.getId());
         updateEpicTaskTime(epicTask.getId());
         updateEpicTaskStatus(epicTask.getId());
@@ -146,7 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public Task updateTask(Task task) {
         Task oldTask = tasksById.get(task.getId());
 
         if (task.getStartTime() != null) {
@@ -154,20 +163,22 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.remove(oldTask);
                 prioritizedTasks.add(task);
             } else {
-                throw new ValidationException("Пересечение по времени у подзадачи " + task.getId());
+                throw new ValidationException("Пересечение по времени у задачи " + task.getId());
             }
         }
 
         tasksById.put(task.getId(), task);
+        return task;
     }
 
     @Override
-    public void updateEpicTask(EpicTask epicTask) {
+    public EpicTask updateEpicTask(EpicTask epicTask) {
         epicTasksById.put(epicTask.getId(), epicTask);
+        return epicTask;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public SubTask updateSubTask(SubTask subTask) {
         SubTask oldSubTask = subTasksById.get(subTask.getId());
 
         if (subTask.getStartTime() != null) {
@@ -187,6 +198,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         updateEpicTaskStatus(epicTask.getId());
         updateEpicTaskTime(epicTask.getId());
+        return subTask;
     }
 
     @Override
@@ -235,6 +247,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
             historyManager.remove(id);
             prioritizedTasks.remove(task);
+        } else {
+            throw new NotFoundException("Не найдена задача для удаления, id = " + id);
         }
     }
 
@@ -247,6 +261,8 @@ public class InMemoryTaskManager implements TaskManager {
             epicTask.getSubTasksId().stream()
                     .peek(subTaskId -> prioritizedTasks.remove(subTasksById.remove(subTaskId)))
                     .forEach(historyManager::remove);
+        } else {
+            throw new NotFoundException("Не эпик для удаления, id = " + id);
         }
     }
 
@@ -261,6 +277,8 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicTaskTime(epicTask.getId());
             historyManager.remove(id);
             prioritizedTasks.remove(subTask);
+        } else {
+            throw new NotFoundException("Не найдена подзадача для удаления, id = " + id);
         }
     }
 
@@ -348,13 +366,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     private boolean isValidateTime(Task task) {
         return getPrioritizedTasks().stream()
-                .anyMatch(savedTask -> {
-                    if (task.getStartTime().equals(savedTask.getStartTime()) &&
-                            task.getEndTime().equals(savedTask.getEndTime())) {
-                        return true;
-                    } else {
-                        return !isTimeIntersection(task, savedTask);
-                    }
+                .filter(savedTask -> !task.equals(savedTask))
+                .noneMatch(savedTask -> {
+                    return isTimeIntersection(savedTask, task);
                 });
     }
 
@@ -365,6 +379,7 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTime2 = task2.getEndTime();
 
         return startTime1.equals(startTime2) ||
+                endTime1.equals(endTime2) ||
                 (startTime1.isAfter(startTime2) && startTime1.isBefore(endTime2)) ||
                 (startTime1.isBefore(startTime2) && endTime1.isAfter(startTime2));
     }

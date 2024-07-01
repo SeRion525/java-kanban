@@ -5,7 +5,11 @@ import model.EpicTask;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +22,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static util.TaskTestUtil.*;
+import static util.TaskTestUtil.assertEqualsEpicTask;
+import static util.TaskTestUtil.assertEqualsSubTask;
+import static util.TaskTestUtil.assertEqualsTask;
+
 
 class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     protected Path tempTaskFile;
@@ -60,15 +67,15 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         @BeforeEach
         void init() {
             task = new Task("task", "task discr", Status.NEW);
-            task.setId(0);
+            task.setId(1);
             epicTask = new EpicTask("epicTask", "epicTask discr");
-            epicTask.setId(1);
-            subTask1 = new SubTask("subTask1", "subTusk1 discr", Status.NEW, 1,
+            epicTask.setId(2);
+            subTask1 = new SubTask("subTask1", "subTusk1 discr", Status.NEW, epicTask.getId(),
                     LocalDateTime.now(), Duration.ofMinutes(1));
-            subTask1.setId(2);
-            subTask2 = new SubTask("subTask2", "subTusk2 discr", Status.NEW, 1,
+            subTask1.setId(3);
+            subTask2 = new SubTask("subTask2", "subTusk2 discr", Status.NEW, epicTask.getId(),
                     LocalDateTime.now().plusMinutes(1), Duration.ofMinutes(1));
-            subTask2.setId(3);
+            subTask2.setId(4);
         }
 
         @DisplayName("Сохранить задачу в файл")
@@ -90,13 +97,13 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
             assertEquals("id,type,title,status,description,epic,duration,startTime", strings.get(0),
                     "Строчка 1 не сошлась.");
-            assertEquals("0,TASK,task,NEW,task discr,null,null,null", strings.get(1),
+            assertEquals("1,TASK,task,NEW,task discr,null,null,null", strings.get(1),
                     "Строчка 2 не сошлась.");
-            assertEquals("1,EPIC_TASK,epicTask,NEW,epicTask discr,null," + epicTask.getDuration().toMinutes() + "," + epicTask.getStartTime().toString(),
+            assertEquals("2,EPIC_TASK,epicTask,NEW,epicTask discr,null," + epicTask.getDuration().toMinutes() + "," + epicTask.getStartTime().toString(),
                     strings.get(2), "Строчка 3 не сошлась.");
-            assertEquals("2,SUB_TASK,subTask1,NEW,subTusk1 discr,1," + subTask1.getDuration().toMinutes() + "," + subTask1.getStartTime().toString(),
+            assertEquals("3,SUB_TASK,subTask1,NEW,subTusk1 discr,2," + subTask1.getDuration().toMinutes() + "," + subTask1.getStartTime().toString(),
                     strings.get(3), "Строчка 4 не сошлась.");
-            assertEquals("3,SUB_TASK,subTask2,NEW,subTusk2 discr,1," + subTask2.getDuration().toMinutes() + "," + subTask2.getStartTime().toString(),
+            assertEquals("4,SUB_TASK,subTask2,NEW,subTusk2 discr,2," + subTask2.getDuration().toMinutes() + "," + subTask2.getStartTime().toString(),
                     strings.get(4), "Строчка 5 не сошлась.");
         }
 
